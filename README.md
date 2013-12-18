@@ -15,7 +15,7 @@ Testé sous Windows et sur Raspberry PI (distrib de base).
 
 http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
 
-`
+```json
 [
   {
     "num": "ZA7",
@@ -31,7 +31,7 @@ http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
     "logo": "logotype_temperature.png"
   }
 ]
-`
+```
 
 Il est possible de passer en paramêtre l'IP locale de la ZiBase afin d'éviter les requetes sur le serveur officiel.
 http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e&ip=192.168.1.15
