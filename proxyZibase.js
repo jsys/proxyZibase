@@ -115,7 +115,6 @@ var zibase=function(params) {
                         return false;
                     }
 
-
                     var evs=[],
                         ev=js.doc.evs[0].ev,
                         i, e;
@@ -178,6 +177,7 @@ var zibase=function(params) {
                         callback();
                         return;
                     }
+
                     var i, j, e, id, pro;
                     for(i=0;i<devices.length;i++) {
 
@@ -187,7 +187,7 @@ var zibase=function(params) {
                             id=tt.zwaveToId(devices[i].num);
                             for(j=0;j<sensors.evs.length;j++) {
                                 e=sensors.evs[j];
-                                if (e.pro==='ZW_ON' && e.id==id) {
+                                if (/*e.pro==='ZW_ON' && */ e.id==id) {
                                     devices[i].id = id;
                                     devices[i].gmt = parseInt(e.gmt,10);
                                     devices[i].date = new Date(parseInt(e.gmt*1000,10));
@@ -199,7 +199,7 @@ var zibase=function(params) {
                             pro=devices[i].num.substr(0,2);
                             for(j=0;j<sensors.evs.length;j++) {
                                 e=sensors.evs[j];
-                                if (e.pro===pro && e.id==devices[i].num.substr(2)) {
+                                if (/*e.pro===pro && */ e.id==devices[i].num.substr(2)) {
                                     devices[i].id = devices[i].num.substr(2);
                                     devices[i].gmt = parseInt(e.gmt,10);
                                     devices[i].date = new Date(parseInt(e.gmt*1000,10));
