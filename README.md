@@ -22,13 +22,21 @@ http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
     "name": "ouverture2",
     "type": "transmitter",
     "logo": "logotype_general_red.png",
-    "actif": "0"
+    "actif": "1",
+    "id": 6,
+    "gmt": 1387380886,
+    "date": "2013-12-18T15:34:46.000Z"
   },
   {
     "num": "OS439191810",
     "name": "Extérieur",
     "type": "temperature",
-    "logo": "logotype_temperature.png"
+    "logo": "logotype_temperature.png",
+    "id": "439191810",
+    "gmt": 1387380938,
+    "date": "2013-12-18T15:35:38.000Z",
+    "v1": "141",
+    "v2": "60"
   }
 ]
 ```
