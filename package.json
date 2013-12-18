@@ -1,0 +1,14 @@
+{
+    "name": "zibase",
+    "version": "0.0.2",
+    "description": "Proxy pour la box domotique ZiBase afin de simplifier le dialogue",
+    "main": "proxyZibase.js",
+    "dependencies": {
+        "express": "*",
+        "url": "*",
+        "MD5": "*",
+        "xml2js": "*"
+    },
+  "author": "Jérôme SAYNES",
+  "license": "GPL2"
+}
