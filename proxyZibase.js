@@ -1,6 +1,8 @@
 /*
 Prg par Jérôme SAYNES le 17/12/2013
 Serveur proxy pour la box domotique
+Version : 0.0.3
+Licence : GPL2
 */
 
 
@@ -101,8 +103,13 @@ var zibase=function(params) {
                 cache=10; // 10 secondes de cache pour les requêtes en ligne
             }
             wget(url, cache, function(xml) {
-                if (xml.substring(0,5)=='ERROR') {
-                    callback(false);
+                try {
+                    if (xml.substring(0,5)=='ERROR') {
+                        callback(false);
+                        return false;
+                    }
+                }
+                catch(err) {
                     return false;
                 }
                 parseString(xml, function (err, js) {
@@ -159,7 +166,7 @@ var zibase=function(params) {
             for (i=0; i<16; i++) {
                 for (j=0; j<16; j++) {
                     k=('Z'+String.fromCharCode(65+i)+''+(j+1));
-                    values[k]=ZZ[i][j];
+                    values[k]=parseInt(ZZ[i][j],10);
                 }
             }
             return values;

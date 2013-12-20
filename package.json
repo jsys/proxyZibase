@@ -1,6 +1,6 @@
 {
     "name": "zibase",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Proxy pour la box domotique ZiBase afin de simplifier le dialogue",
     "main": "proxyZibase.js",
     "dependencies": {
