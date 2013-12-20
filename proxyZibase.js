@@ -145,10 +145,10 @@ var zibase=function(params) {
             }
             var chaine='', w=[], x=[], y=[], z=[];
             for (i=0;i<64;i++) {
-                w[i]=(h[i]&1);      // bit 0
-                x[i]=(h[i]&2)/2;   // bit 1
-                y[i]=(h[i]&4)/4;   // bit 2
-                z[i]=(h[i]&8)/8;   // bit 3
+                w[i]=(h[i]&1);
+                x[i]=(h[i]&2)/2;
+                y[i]=(h[i]&4)/4;
+                z[i]=(h[i]&8)/8;
                 chaine+=''+z[i]+y[i]+x[i]+w[i];
             }
             var Z=[];
@@ -230,7 +230,23 @@ app.get('/', function (req, res) {
     if (req.query.device && req.query.token) {
         var z=zibase({device: req.query.device, token: req.query.token, ip: req.query.ip});
         z.infos(function(infos) {
-            return res.send(infos);
+            if (req.query.periph && typeof infos==='object') {
+                for(var i=0;i<infos.length;i++) {
+                    if (infos[i].num===req.query.periph || infos[i].name===req.query.periph) {
+                        if (req.query.info) {
+                            // Renvoi l'info sur un périphérique
+                            return res.send(infos[i][req.query.info]+'');
+                        }
+                        // Renvoi les infos d'un périphérique
+                        return res.send(infos[i]);
+                    }
+                    // Renvoi rien si le periph recherché n'existe pas
+                    return res.send();
+                }
+            } else {
+                // Renvoi tout les périphériques
+                return res.send(infos);
+            }
         });
     } else {
         return res.send("Parametre device et token manquant.");

@@ -13,8 +13,8 @@ Testé sous Windows et sur Raspberry PI (distrib de base).
 
 # Exemple
 
+Récupérer l'ensemble des périphériques :
 http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
-
 ```json
 [
   {
@@ -22,7 +22,7 @@ http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
     "name": "ouverture2",
     "type": "transmitter",
     "logo": "logotype_general_red.png",
-    "actif": "1",
+    "actif": 1,
     "id": 6,
     "gmt": 1387380886,
     "date": "2013-12-18T15:34:46.000Z"
@@ -40,6 +40,29 @@ http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e
   }
 ]
 ```
+
+Récupérer un prériphérique :
+http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e&periph=ZA7
+ou http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e&periph=ouverture2
+```json
+{
+  "num": "ZA7",
+  "name": "ouverture2",
+  "type": "transmitter",
+  "logo": "logotype_general_red.png",
+  "actif": 1,
+  "id": 6,
+  "gmt": 1387380886,
+  "date": "2013-12-18T15:34:46.000Z"
+}
+```
+
+Récupérer une info d'un periphérique :
+http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e&periph=ZA7&info=actif
+```json
+1
+```
+
 
 Il est possible de passer en paramêtre l'IP locale de la ZiBase afin d'éviter les requetes sur le serveur officiel.
 http://127.0.0.1:81/?device=ZiBASE00123&token=1a2b3c4d5e&ip=192.168.1.15
