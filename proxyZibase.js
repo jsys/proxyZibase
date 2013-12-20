@@ -1,7 +1,7 @@
 /*
 Prg par Jérôme SAYNES le 17/12/2013
 Serveur proxy pour la box domotique
-Version : 0.0.3
+Version : 0.0.4
 Licence : GPL2
 */
 
@@ -52,21 +52,21 @@ function wget(aurl, seconde_cache, callback) {
             second = (new Date()-date)/1000;
             if (second > 5) {
                 req.abort();
-                callback(false);
+                return callback(false);
             }
         });
         res.on('end', function() {
             if (res.statusCode!==200) {
                 callback(res.statusCode);
             }
-            callback(data);
+            return callback(data);
         });
         file.on('drain', function() {
             res.resume();
         });
     });
     req.on('error', function() {
-        callback(false);
+        return callback(false);
     });
 }
 
@@ -171,6 +171,14 @@ var zibase=function(params) {
             }
             return values;
         },
+        // zw = ZA7 par exemple
+        zwaveSuppAlerte: function(zw, callback) {
+            var id=this.zwaveToId(zw),
+                url='https://zibase.net/m/zapi_remote_zibase_set.php?device='+this.params.device+'&token='+this.params.token+'&action=rowzibasecommand&param1=4&param2=0&param3='+id+'&param4=19';
+            wget(url,0, function(res) {
+                callback();
+            });
+        },
 
         infos: function(callback) {
             var tt=this;
@@ -190,12 +198,13 @@ var zibase=function(params) {
 
                         // Si ZWAVE
                         if (devices[i].num.substr(0,1)==='Z') {
-                            devices[i].actif=sensors.zwtab[devices[i].num];
                             id=tt.zwaveToId(devices[i].num);
+                            devices[i].id = id;
+                            devices[i].actif=sensors.zwtab[devices[i].num];
                             for(j=0;j<sensors.evs.length;j++) {
                                 e=sensors.evs[j];
                                 if (/*e.pro==='ZW_ON' && */ e.id==id) {
-                                    devices[i].id = id;
+                                    devices[i].alerte = 1;
                                     devices[i].gmt = parseInt(e.gmt,10);
                                     devices[i].date = new Date(parseInt(e.gmt*1000,10));
                                     devices[i].lowbatt = e.lowbatt;
@@ -221,6 +230,44 @@ var zibase=function(params) {
                     callback(devices);
                 });
             });
+        },
+
+
+        traiteAction: function(param, callback) {
+            if (param.suppAlerte && param.suppAlerte.substring(0,1)==='Z') {
+                this.zwaveSuppAlerte(param.suppAlerte, function() {
+                    return callback(true);
+                });
+            } else {
+                return callback(false);
+            }
+        },
+
+        traiteQuery: function(param, callback) {
+            this.infos(function(infos) {
+                if (param.periph && typeof infos==='object') {
+                    var ok=false;
+                    for(var i=0;i<infos.length;i++) {
+                        if (infos[i].num===param.periph || infos[i].name===param.periph) {
+                            if (param.info) {
+                                // Renvoi l'info sur un périphérique
+                                return callback(infos[i][param.info]+'');
+                            } else {
+                                // Renvoi les infos d'un périphérique
+                                return callback(infos[i]);
+                            }
+                            ok=true;
+                        }
+                    }
+                    if (!ok) {
+                        // Renvoi rien si le periph recherché n'existe pas
+                        return callback();
+                    }
+                } else {
+                    // Renvoi tout les périphériques
+                    return callback(infos);
+                }
+            });
         }
     };
 };
@@ -229,25 +276,19 @@ var zibase=function(params) {
 app.get('/', function (req, res) {
     if (req.query.device && req.query.token) {
         var z=zibase({device: req.query.device, token: req.query.token, ip: req.query.ip});
-        z.infos(function(infos) {
-            if (req.query.periph && typeof infos==='object') {
-                for(var i=0;i<infos.length;i++) {
-                    if (infos[i].num===req.query.periph || infos[i].name===req.query.periph) {
-                        if (req.query.info) {
-                            // Renvoi l'info sur un périphérique
-                            return res.send(infos[i][req.query.info]+'');
-                        }
-                        // Renvoi les infos d'un périphérique
-                        return res.send(infos[i]);
-                    }
-                    // Renvoi rien si le periph recherché n'existe pas
-                    return res.send();
-                }
-            } else {
-                // Renvoi tout les périphériques
-                return res.send(infos);
-            }
-        });
+
+        if (req.query.suppAlerte) {
+            z.traiteAction(req.query, function(r) {
+                z.traiteQuery(req.query, function(r) {
+                    return res.send(r);
+                });
+            });
+        } else {
+            z.traiteQuery(req.query, function(r) {
+                return res.send(r);
+            });
+        }
+
     } else {
         return res.send("Parametre device et token manquant.");
     }
