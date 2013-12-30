@@ -274,6 +274,8 @@ var zibase=function(params) {
 
 
 app.get('/', function (req, res) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
     if (req.query.device && req.query.token) {
         var z=zibase({device: req.query.device, token: req.query.token, ip: req.query.ip});
 
