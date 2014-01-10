@@ -76,8 +76,7 @@ var zibase=function(params) {
         params: params,
         getDevices: function(callback) {
             var sensors=[],
-                url='http://zibase.net/m/get_xml.php?device='+this.params.device+'&token='+this.params.token,
-                cache=60*15; // 10 minutes de cache
+                url='http://zibase.net/m/get_xml.php?device='+this.params.device+'&token='+this.params.token;
             wget(url, this.params.cache, function(xml) {
                 if (xml=='') {
                     callback(false);
@@ -90,6 +89,7 @@ var zibase=function(params) {
                         sensors.push({num: e[i].$.c, name:e[i].n[0], type:e[i].$.t, logo:e[i].$.i});
                     }
                     callback(sensors);
+                    return true
                 });
             });
         },
@@ -131,6 +131,7 @@ var zibase=function(params) {
                     }
 
                     callback({evs: evs, zwtab: zwtab});
+                    return true;
                 });
             });
         },
@@ -162,7 +163,7 @@ var zibase=function(params) {
                     ZZ[i][15-j] = Z[i].substr(j,1);
                 }
             }
-            var values={}, v=[],k;
+            var values={}, k;
             for (i=0; i<16; i++) {
                 for (j=0; j<16; j++) {
                     k=('Z'+String.fromCharCode(65+i)+''+(j+1));
@@ -176,7 +177,7 @@ var zibase=function(params) {
             var id=this.zwaveToId(zw),
                 url='https://zibase.net/m/zapi_remote_zibase_set.php?device='+this.params.device+'&token='+this.params.token+'&action=rowzibasecommand&param1=4&param2=0&param3='+id+'&param4=19';
             wget(url,0, function(res) {
-                callback();
+                callback(res);
             });
         },
 
@@ -296,6 +297,10 @@ app.get('/', function (req, res) {
     }
 });
 
+app.get('/version', function (req, res) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return res.send("V2014.01.10");
+});
 
 http.createServer(app).listen(81, function(){
     console.log('proxyZibase server start on port 81');
